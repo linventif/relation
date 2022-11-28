@@ -77,6 +77,9 @@ local function EditFriend(action, ply, target)
     elseif action == "remove" then
         table.RemoveByValue(data[GranixIdentity:GetCharacter(ply)]["friends"], target:SteamID64())
         notif(ply, target:Nick() .. " a été retiré de votre liste d'amis.", 0, 5)
+    elseif action == "removebyid" then
+        table.RemoveByValue(data[GranixIdentity:GetCharacter(ply)]["friends"], target)
+        notif(ply, target .. " a été retiré de votre liste d'amis.", 0, 5)
     end
     file.Write("granix_identity/" .. ply:SteamID64() .. ".json", util.TableToJSON(data))
     refresh(ply)
@@ -86,11 +89,15 @@ local WaitingRequest = WaitingRequest or {}
 
 net.Receive("GranixIdentity", function(len, ply)
     local action = net.ReadString()
-    local target = net.ReadEntity()
+    local target = net.ReadEntity() or nil
     local target2 = net.ReadEntity() or nil
+    local str = net.ReadString() or nil
     if action == "remove" then
         EditFriend("remove", ply, target)
         EditFriend("remove", target, ply)
+    elseif action == "removebyid" then
+        EditFriend("removebyid", ply, str)
+        EditFriend("removebyid", str, ply)
     elseif action == "get" then
         refresh(ply)
     elseif action == "admin_add" then
@@ -140,14 +147,5 @@ net.Receive("GranixIdentity", function(len, ply)
             notif(ply, "Vous avez refusé la demande d'amis de " .. target:Nick(), 0, 5)
             notif(target, ply:Nick() .. " a refusé votre demande d'amis.", 0, 5)
         end
-    end
-end)
-
-hook.Add("PlayerSay", "GranixIdentity", function(ply, text)
-    if text == "/friends" then
-        net.Start("GranixIdentity")
-            net.WriteString("open")
-        net.Send(ply)
-        return false
     end
 end)

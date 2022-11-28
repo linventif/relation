@@ -129,7 +129,7 @@ concommand.Add("friends_add", function(ply, cmd, args)
     end
 end)
 
-local function Confirmation(msgsn, nbmsg, font)
+local function Confirmation(msgsn, nbmsg, font, id, target)
     local HeightLine = 0
     if nbmsg == 1 then
         HeightLine = 50
@@ -172,8 +172,19 @@ local function Confirmation(msgsn, nbmsg, font)
         draw.RoundedBox(4, 0, 0, w, h, Color(114, 192, 112, 255))
     end
     ButAccepet.DoClick = function()
+        if id == "rmfriend" then
+            net.Start("GranixIdentity")
+                net.WriteString("removebyid")
+                if !isnumber(tonumber(target)) && target:IsPlayer() then
+                    net.WriteEntity(target)
+                else
+                    net.WriteEntity(nil)
+                    net.WriteEntity(nil)
+                    net.WriteString(target)
+                end
+            net.SendToServer()
+        end
         frame:Close()
-        return true
     end
 
     local ButRefuse = vgui.Create("DButton", frame)
@@ -187,7 +198,6 @@ local function Confirmation(msgsn, nbmsg, font)
     end
     ButRefuse.DoClick = function()
         frame:Close()
-        return false
     end
 end
 
@@ -239,11 +249,13 @@ local function OpenPanel()
 
     for k, v in pairs(friends) do
         local target = player.GetBySteamID64(v)
+        local target2 = target
         local name = ""
         if !target then
             name = v
+            target2 = v
         else
-            name = target:Nick()
+            name = target:Nick() or v
         end
 
         local wep_frame = wep_scroll:Add("DPanel")
@@ -277,11 +289,12 @@ local function OpenPanel()
             draw.RoundedBox(4, 0, 0, w, h, Color(217, 98, 98, 255))
         end
         BtnRemove.DoClick = function()
-            net.Start("GranixIdentity")
-                net.WriteString("remove")
-                net.WriteEntity(player.GetBySteamID64(v))
-            net.SendToServer()
-            wep_frame:Remove()
+            local msgs = {
+                "Etes vous sur de retirer",
+                name,
+                "de votre liste d'amis ?",
+            }
+            Confirmation(msgs, 3, "GranixIdentity20", "rmfriend", target2)
         end
     end
 
