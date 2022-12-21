@@ -33,6 +33,7 @@ local full_name = "Granix Identity"
 local license = "Commercial License"
 local version = 1.0
 GranixIdentity = {}
+LinvLib.Install["granix-identity"] = version
 
 // -- // -- // -- // -- // -- // -- // -- // -- // -- //
 // Print Console Informations
