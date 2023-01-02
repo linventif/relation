@@ -201,15 +201,6 @@ hook.Add("PlayerInitialSpawn", "FriendsSys", function(ply)
     InitData(ply)
 end)
 
-// TEST
-
-concommand.Add("test_friends", function(ply, cmd, args)
-    for _, ply in pairs(player.GetAll()) do
-        local data = GetData(ply:SteamID64())
-        PrintTable(data)
-    end
+concommand.Add("friends_system_drop_db", function(ply, cmd, args)
+    sql.Query("DROP TABLE friends_system")
 end)
-
-for _, ply in pairs(player.GetAll()) do
-    InitData(ply)
-end
