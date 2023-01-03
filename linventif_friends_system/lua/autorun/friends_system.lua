@@ -23,7 +23,7 @@ end
 local folder = "friends_system"
 local name = "Friends System"
 local license = "Commercial"
-local version = "0.1.0"
+local version = "0.1.1"
 
 FriendsSys = {}
 FriendsSys.Config = {}

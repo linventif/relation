@@ -1,6 +1,5 @@
 util.AddNetworkString("FriendsSys")
 
-sql.Query("DROP TABLE friends_system")
 sql.Query("CREATE TABLE IF NOT EXISTS friends_system (id INTEGER PRIMARY KEY AUTOINCREMENT, steamid64 TEXT, friends TEXT DEFAULT '{}', requests TEXT DEFAULT '{}')")
 
 local ply_in_admin = {}
