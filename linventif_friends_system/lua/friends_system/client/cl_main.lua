@@ -10,15 +10,15 @@ local in_admin = {}
 local friends = {}
 local request = {}
 
-function FriendsSys.IsFriend(steamid64)
+function FriendsSys:IsFriend(steamid64)
     return friends[steamid64] || false
 end
 
-function FriendsSys.GetName(target)
-    if FriendsSys.IsFriend(target:SteamID64()) then
+function FriendsSys:GetName(target)
+    if FriendsSys:IsFriend(target:SteamID64()) then
         return target:Nick()
     else
-        return "Inconnue"
+        return FriendsSys:GetTrad("unknown")
     end
 end
 
@@ -69,7 +69,7 @@ local function OpenConfirm(msg, func)
     local but_cancel = vgui.Create("DButton", frame)
     but_cancel:SetSize(RespW(140), RespH(40))
     but_cancel:SetPos(RespW(40), RespH(130))
-    but_cancel:SetText("Annuler")
+    but_cancel:SetText(FriendsSys:GetTrad("cancel"))
     but_cancel:SetFont("LinvFontRobo20")
     but_cancel:SetTextColor(FriendsSys.Config.Color["text"])
     but_cancel.DoClick = function()
@@ -79,7 +79,7 @@ local function OpenConfirm(msg, func)
     local but_confirm = vgui.Create("DButton", frame)
     but_confirm:SetSize(RespW(140), RespH(40))
     but_confirm:SetPos(RespW(220), RespH(130))
-    but_confirm:SetText("Confirmer")
+    but_confirm:SetText(FriendsSys:GetTrad("confirm"))
     but_confirm:SetFont("LinvFontRobo20")
     but_confirm.DoClick = function()
         func()
@@ -100,9 +100,9 @@ local function OpenMenu(section)
         draw.RoundedBox(8, 0, 0, w, h, FriendsSys.Config.Color["border"])
         draw.RoundedBox(6, RespW(4), RespH(4), w-RespW(8), h-RespH(8), FriendsSys.Config.Color["background"])
         if section == 1 then
-            draw.SimpleText("Liste des Amis", "LinvFontRobo30", w/2, RespH(36), FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(FriendsSys:GetTrad("friends_list"), "LinvFontRobo30", w/2, RespH(36), FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         elseif section == 2 then
-            draw.SimpleText("Demande d'Amis en Attente", "LinvFontRobo30", w/2, RespH(36), FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(FriendsSys:GetTrad("friends_wait"), "LinvFontRobo30", w/2, RespH(36), FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
     local scroll_content = vgui.Create("DScrollPanel", frame)
@@ -134,11 +134,11 @@ local function OpenMenu(section)
             local but_remove = vgui.Create("DButton", content)
             but_remove:SetSize(RespW(90), RespH(32))
             but_remove:SetPos(RespW(336), RespH(4))
-            but_remove:SetText("Retirer")
+            but_remove:SetText(FriendsSys:GetTrad("remove"))
             but_remove:SetFont("LinvFontRobo20")
             but_remove.DoClick = function()
                 frame:Remove()
-                OpenConfirm({"Voulez-vous vraiment retirer ce", "joueur de votre liste d'amis ?"}, function()
+                OpenConfirm({FriendsSys:GetTrad("remove_confirm_1"), FriendsSys:GetTrad("remove_confirm_2")}, function()
                     net.Start("FriendsSys")
                         net.WriteString("remove")
                         net.WriteEntity(ply)
@@ -168,7 +168,7 @@ local function OpenMenu(section)
             local but_accept = vgui.Create("DButton", content)
             but_accept:SetSize(RespW(90), RespH(32))
             but_accept:SetPos(RespW(242), RespH(4))
-            but_accept:SetText("Accepter")
+            but_accept:SetText(FriendsSys:GetTrad("accept"))
             but_accept:SetFont("LinvFontRobo20")
             but_accept.DoClick = function()
                 frame:Remove()
@@ -183,7 +183,7 @@ local function OpenMenu(section)
             local but_refuse = vgui.Create("DButton", content)
             but_refuse:SetSize(RespW(90), RespH(32))
             but_refuse:SetPos(RespW(336), RespH(4))
-            but_refuse:SetText("Refuser")
+            but_refuse:SetText(FriendsSys:GetTrad("refuse"))
             but_refuse:SetFont("LinvFontRobo20")
             but_refuse.DoClick = function()
                 frame:Remove()
@@ -204,7 +204,7 @@ local function OpenMenu(section)
         content.Paint = function(self, w, h)
             draw.RoundedBox(6, 0, 0, w, h, FriendsSys.Config.Color["inter"])
             draw.RoundedBox(4, RespW(4), RespH(4), w-RespW(8), h-RespH(8), FriendsSys.Config.Color["inter"])
-            draw.SimpleText("Vous n'avez aucun ami", "LinvFontRobo20", w/2, h/2, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(FriendsSys:GetTrad("no_friends"), "LinvFontRobo20", w/2, h/2, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
     if actual_request == 0 && section == 2 then
@@ -215,25 +215,25 @@ local function OpenMenu(section)
         content.Paint = function(self, w, h)
             draw.RoundedBox(6, 0, 0, w, h, FriendsSys.Config.Color["inter"])
             draw.RoundedBox(4, RespW(4), RespH(4), w-RespW(8), h-RespH(8), FriendsSys.Config.Color["inter"])
-            draw.SimpleText("Vous n'avez aucune demande", "LinvFontRobo20", w/2, h/2, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(FriendsSys:GetTrad("no_request"), "LinvFontRobo20", w/2, h/2, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
     local but_setting = vgui.Create("DButton", frame)
     but_setting:SetSize(RespW(125), RespH(40))
     but_setting:SetPos(RespW(20), RespH(495))
-    but_setting:SetText("Parametres")
+    but_setting:SetText(FriendsSys:GetTrad("settings"))
     but_setting:SetFont("LinvFontRobo20")
     but_setting.DoClick = function()
-        Notif("Fonctionnalité en cours de développement !")
+        Notif(FriendsSys:GetTrad("in_dev"))
     end
     LinvLib.UIButton(but_setting, FriendsSys.Config.Color.Button, 3, 8, 6)
     local but_switch = vgui.Create("DButton", frame)
     but_switch:SetSize(RespW(125), RespH(40))
     but_switch:SetPos(RespW(173), RespH(495))
     if section == 1 then
-        but_switch:SetText("En Attente")
+        but_switch:SetText(FriendsSys:GetTrad("friends_list_short"))
     elseif section == 2 then
-        but_switch:SetText("Liste d'Amis")
+        but_switch:SetText(FriendsSys:GetTrad("friends_wait_short"))
     end
     but_switch:SetFont("LinvFontRobo20")
     but_switch.DoClick = function()
@@ -248,7 +248,7 @@ local function OpenMenu(section)
     local but_close = vgui.Create("DButton", frame)
     but_close:SetSize(RespW(125), RespH(40))
     but_close:SetPos(RespW(325), RespH(495))
-    but_close:SetText("Annuler")
+    but_close:SetText(FriendsSys:GetTrad("cancel"))
     but_close:SetFont("LinvFontRobo20")
     but_close:SetTextColor(FriendsSys.Config.Color["text"])
     but_close.DoClick = function()
@@ -261,6 +261,7 @@ if FriendsSys.Config.NameOvHead then
     hook.Add("HUDPaint", "DrawPlayerNames", function()
         for _, ply in pairs(player.GetAll()) do
             if ply == LocalPlayer() then continue end
+            if FriendsSys.Config.JobStaff[team.GetName(ply:Team())] then continue end
             local distance = LocalPlayer():GetPos():Distance(ply:GetPos())
             if distance > FriendsSys.Config.NameOvHeadDist then continue end
             local steamid = ply:SteamID64()
@@ -285,7 +286,7 @@ net.Receive("FriendsSys", function()
         local data = util.JSONToTable(net.ReadString())
         if !data then return end
         request = ConvertTable(data || {})
-        Notif("Vous avez reçu une demande d'amis !")
+        Notif(FriendsSys:GetTrad("request_received"))
     elseif id == "refresh" then
         local data = util.JSONToTable(net.ReadString())
         if !data then return end
@@ -352,5 +353,5 @@ hook.Add("HUDPaint", "FriendsSys:HUDPaint", function()
     draw.RoundedBox(0, ScrW() / 2 - 100, ScrH() / 2 - 10, 200, 30, FriendsSys.Config.Color["background"])
     draw.RoundedBox(0, ScrW() / 2 - 100 + 4, ScrH() / 2 - 10 + 4, 200 - 8, 30 - 8, FriendsSys.Config.Color["inter"])
     draw.RoundedBox(0, ScrW() / 2 - 100 + 4, ScrH() / 2 - 10 + 4, math.Clamp(200 - 8 - timer.TimeLeft("FriendsSys:Use") * (200 / waiting_time), 0, 200), 30 - 8, FriendsSys.Config.Color["active"])
-    draw.SimpleText("Ajouter " .. LocalPlayer().EMenuLooking:Nick() .. " à vos amis", "LinvFontRobo20", ScrW() / 2, ScrH() / 2 - 30, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(FriendsSys:GetTrad("add_friends"), "LinvFontRobo20", ScrW() / 2, ScrH() / 2 - 30, FriendsSys.Config.Color["text"], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end)

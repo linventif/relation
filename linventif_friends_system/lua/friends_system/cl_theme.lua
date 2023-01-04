@@ -1,3 +1,5 @@
+// If you want to add a official default theme, contact me on discord: https://linventif.fr/discord
+
 local theme = {
     ["sentro"] = {
         ["border"] = Color(115, 115, 115),
@@ -57,4 +59,5 @@ local theme = {
     }
 }
 
+// Do not edit below this line !!
 FriendsSys.Config.Color = theme[FriendsSys.Config.Theme] || theme["dark"]

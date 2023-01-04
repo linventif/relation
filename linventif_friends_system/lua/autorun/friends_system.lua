@@ -23,7 +23,7 @@ end
 local folder = "friends_system"
 local name = "Friends System"
 local license = "Commercial"
-local version = "0.1.1"
+local version = "0.1.2"
 
 FriendsSys = {}
 FriendsSys.Config = {}
@@ -32,8 +32,7 @@ LinvLib.Install["friends-system"] = version
 // -- // -- // -- // -- // -- // -- // -- // -- // -- //
 
 LinvLib.LoadStr(name, version, license)
-LinvLib.Load(name, folder, {"sh_config.lua", "sh_language.lua"})
-LinvLib.Loader(folder .. "/shared", name)
+LinvLib.Load(name, folder, {"sh_config.lua", "sh_language.lua", "cl_theme.lua"})
 LinvLib.Loader(folder .. "/server", name)
 LinvLib.Loader(folder .. "/client", name)
 

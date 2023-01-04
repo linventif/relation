@@ -86,16 +86,16 @@ net.Receive("FriendsSys", function(len, ply)
     if id == "request" then
         local target = net.ReadEntity()
         if IsFriend(ply, target) then
-            Notif(ply, "Vous êtes déjà amis avec cette personne !")
+            Notif(ply, FriendsSys:GetTrad("already_friend"))
         elseif IsRequest(ply, target) then
-            Notif(ply, "Vous avez déjà envoyé une demande d'amis à cette personne !")
+            Notif(ply, FriendsSys:GetTrad("already_request"))
         else
             local data = GetData(target:SteamID64())
             data.requests = util.JSONToTable(data.requests)
             table.insert(data.requests, ply:SteamID64())
             EditData(target:SteamID64(), "requests", util.TableToJSON(data.requests))
-            Notif(ply, "Vous avez envoyé une demande d'amis à " .. target:Nick() .. " !")
-            Notif(target, ply:Nick() .. " vous a envoyé une demande d'amis !")
+            Notif(ply, FriendsSys:GetTrad("request_send") .. target:Nick() .. " !")
+            Notif(target, ply:Nick() .. FriendsSys:GetTrad("request_receive")
             net.Start("FriendsSys")
                 net.WriteString("request")
                 net.WriteString(util.TableToJSON(data.requests))
@@ -105,9 +105,9 @@ net.Receive("FriendsSys", function(len, ply)
     elseif id == "accept" then
         local target = net.ReadEntity()
         if IsFriend(ply, target) then
-            Notif(ply, "Vous êtes déjà amis avec cette personne !")
+            Notif(ply, FriendsSys:GetTrad("already_friend"))
         elseif !IsRequest(target, ply) then
-            Notif(ply, "Vous n'avez pas reçu de demande d'amis de cette personne !")
+            Notif(ply, FriendsSys:GetTrad("no_request"))
         else
             local data = GetData(ply:SteamID64())
             data.requests = util.JSONToTable(data.requests)
@@ -120,14 +120,14 @@ net.Receive("FriendsSys", function(len, ply)
             end
             EditData(ply:SteamID64(), "requests", util.TableToJSON(data.requests))
             EditData(ply:SteamID64(), "friends", util.TableToJSON(data.friends))
-            Notif(ply, "Vous avez accepté la demande d'amis de " .. target:Nick() .. " !")
+            Notif(ply, FriendsSys:GetTrad("request_accept") .. target:Nick() .. " !")
             local data = GetData(target:SteamID64())
             data.requests = util.JSONToTable(data.requests)
             data.friends = util.JSONToTable(data.friends)
             data.in_admin = ply_in_admin
             table.insert(data.friends, ply:SteamID64())
             EditData(target:SteamID64(), "friends", util.TableToJSON(data.friends))
-            Notif(target, ply:Nick() .. " a accepté votre demande d'amis !")
+            Notif(target, ply:Nick() .. FriendsSys:GetTrad("accept_request"))
             net.Start("FriendsSys")
                 net.WriteString("refresh")
                 net.WriteString(util.TableToJSON(data))
@@ -136,9 +136,9 @@ net.Receive("FriendsSys", function(len, ply)
     elseif id == "decline" then
         local target = net.ReadEntity()
         if IsFriend(ply, target) then
-            Notif(ply, "Vous êtes déjà amis avec cette personne !")
+            Notif(ply, FriendsSys:GetTrad("already_friend"))
         elseif !IsRequest(target, ply) then
-            Notif(ply, "Vous n'avez pas reçu de demande d'amis de cette personne !")
+            Notif(ply, FriendsSys:GetTrad("no_request"))
         else
             local data = GetData(ply:SteamID64())
             data.requests = util.JSONToTable(data.requests)
@@ -148,13 +148,13 @@ net.Receive("FriendsSys", function(len, ply)
                 end
             end
             EditData(ply:SteamID64(), "requests", util.TableToJSON(data.requests))
-            Notif(ply, "Vous avez refusé la demande d'amis de " .. target:Nick() .. " !")
-            Notif(target, ply:Nick() .. " a refusé votre demande d'amis !")
+            Notif(ply, FriendsSys:GetTrad("request_refused") .. target:Nick() .. " !")
+            Notif(target, ply:Nick() .. FriendsSys:GetTrad("decline_request"))
         end
     elseif id == "remove" then
         local target = net.ReadEntity()
         if !IsFriend(ply, target) then
-            Notif(ply, "Vous n'êtes pas amis avec cette personne !")
+            Notif(ply, FriendsSys:GetTrad("not_friend"))
         else
             local data = GetData(ply:SteamID64())
             data.friends = util.JSONToTable(data.friends)
@@ -164,8 +164,8 @@ net.Receive("FriendsSys", function(len, ply)
                 end
             end
             EditData(ply:SteamID64(), "friends", util.TableToJSON(data.friends))
-            Notif(ply, "Vous avez supprimé " .. target:Nick() .. " de votre liste d'amis !")
-            Notif(target, ply:Nick() .. " vous a supprimé de sa liste d'amis !")
+            Notif(ply, FriendsSys:GetTrad("remove_friend_you") .. target:Nick() .. FriendsSys:GetTrad("remove_friend_you_2"))
+            Notif(target, ply:Nick() .. FriendsSys:GetTrad("remove_friend"))
             local data = GetData(target:SteamID64())
             data.requests = util.JSONToTable(data.requests)
             data.friends = util.JSONToTable(data.friends)
